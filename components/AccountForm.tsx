@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Account } from "@/app/types";
 import PlaidLink from "./PlaidLink";
 
@@ -124,7 +124,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
     }
   };
 
-  const handlePlaidSuccess = (syncData: any) => {
+  const handlePlaidSuccess = (syncData: { accounts?: Array<Partial<Account>> }) => {
     if (syncData.accounts && syncData.accounts.length > 0) {
       const firstAccount = syncData.accounts[0];
       setFormData({
@@ -241,24 +241,24 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
                 if (!errors.accountName) {
-                  e.target.style.borderColor = "#d1d5db";
-                  e.target.style.boxShadow = "none";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.boxShadow = "none";
                 }
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target && !errors.accountName) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target && !errors.accountName) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="e.g., Chase Sapphire Reserve"
@@ -298,22 +298,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                (e.target as HTMLInputElement).style.boxShadow = "none";
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="Last 4 digits (optional)"
@@ -353,24 +353,24 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
                 if (!errors.paymentDueDate) {
-                  e.target.style.borderColor = "#d1d5db";
-                  e.target.style.boxShadow = "none";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.boxShadow = "none";
                 }
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target && !errors.paymentDueDate) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target && !errors.paymentDueDate) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="1-31"
@@ -446,24 +446,24 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
                 if (!errors.creditLimit) {
-                  e.target.style.borderColor = "#d1d5db";
-                  e.target.style.boxShadow = "none";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.boxShadow = "none";
                 }
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target && !errors.creditLimit) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target && !errors.creditLimit) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="0.00"
@@ -505,22 +505,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                (e.target as HTMLInputElement).style.boxShadow = "none";
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="0.00"
@@ -556,22 +556,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                (e.target as HTMLInputElement).style.boxShadow = "none";
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="0.00"
@@ -608,22 +608,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                (e.target as HTMLInputElement).style.boxShadow = "none";
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="0.00"
@@ -657,22 +657,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                (e.target as HTMLInputElement).style.boxShadow = "none";
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
             />
@@ -753,22 +753,22 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                (e.target as HTMLInputElement).style.boxShadow = "none";
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="0.00"
@@ -808,24 +808,24 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
                 background: "white",
               }}
               onFocus={(e) => {
-                e.target.style.outline = "none";
-                e.target.style.borderColor = "#3b82f6";
-                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+                (e.target as HTMLInputElement).style.outline = "none";
+                (e.target as HTMLInputElement).style.borderColor = "#3b82f6";
+                (e.target as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
               }}
               onBlurCapture={(e) => {
                 if (!errors.lastUsed) {
-                  e.target.style.borderColor = "#d1d5db";
-                  e.target.style.boxShadow = "none";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.boxShadow = "none";
                 }
               }}
               onMouseEnter={(e) => {
                 if (document.activeElement !== e.target && !errors.lastUsed) {
-                  e.target.style.borderColor = "#9ca3af";
+                  (e.target as HTMLInputElement).style.borderColor = "#9ca3af";
                 }
               }}
               onMouseLeave={(e) => {
                 if (document.activeElement !== e.target && !errors.lastUsed) {
-                  e.target.style.borderColor = "#d1d5db";
+                  (e.target as HTMLInputElement).style.borderColor = "#d1d5db";
                 }
               }}
               placeholder="1-12"

@@ -142,7 +142,7 @@ export default function AccountTableCompact({
         </tr>
       </thead>
         <tbody>
-          {accounts.map((account, index) => {
+          {accounts.map((account) => {
             const utilization = calculateUtilization(account);
             const utilizationCategory = getUtilizationCategory(utilization);
             const isExpanded = expandedRows.has(account.id);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Account } from "@/app/types";
 import { loadAccounts, deleteAccount, makePayment } from "@/lib/dataSync";
@@ -9,7 +9,7 @@ import MetricCards from "@/components/MetricCards";
 import AccountTableCompact from "@/components/AccountTableCompact";
 import AccountTableDetailed from "@/components/AccountTableDetailed";
 
-export default function AccountsPage() {
+function AccountsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const viewParam = searchParams.get("view") || "compact";
@@ -46,8 +46,8 @@ export default function AccountsPage() {
   };
 
   const sortedAccounts = [...accounts].sort((a, b) => {
-    let aValue: any;
-    let bValue: any;
+    let aValue: string | number;
+    let bValue: string | number;
 
     switch (sortColumn) {
       case "accountName":
@@ -404,5 +404,13 @@ export default function AccountsPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function AccountsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccountsPageContent />
+    </Suspense>
   );
 }
