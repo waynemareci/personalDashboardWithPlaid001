@@ -2,6 +2,7 @@
 
 import { useState, Fragment } from "react";
 import { Account } from "@/app/types";
+import PlaidLinkAccount from "@/components/PlaidLinkAccount";
 import {
   formatCurrency,
   calculateUtilization,
@@ -17,6 +18,7 @@ interface AccountTableCompactProps {
   onSort: (column: string) => void;
   sortColumn: string;
   sortDirection: "asc" | "desc";
+  onAccountLinked?: () => void;
 }
 
 export default function AccountTableCompact({
@@ -25,6 +27,7 @@ export default function AccountTableCompact({
   onSort,
   sortColumn,
   sortDirection,
+  onAccountLinked,
 }: AccountTableCompactProps) {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -277,6 +280,31 @@ export default function AccountTableCompact({
                             {account.rewards ? formatCurrency(account.rewards) : "—"}
                           </div>
                         </div>
+                      </div>
+                      <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        {account.plaidAccessToken ? (
+                          <span style={{ fontSize: "0.813rem", color: "#059669", fontWeight: 500 }}>
+                            ✓ Linked to Plaid
+                          </span>
+                        ) : (
+                          <PlaidLinkAccount 
+                            accountId={account._id || account.id} 
+                            onSuccess={() => onAccountLinked?.()} 
+                          />
+                        )}
+                        <button
+                          onClick={() => onEdit(account)}
+                          style={{
+                            padding: "6px 12px",
+                            border: "1px solid #d1d5db",
+                            background: "white",
+                            borderRadius: "4px",
+                            fontSize: "0.813rem",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Edit
+                        </button>
                       </div>
                     </td>
                   </tr>

@@ -1,0 +1,141 @@
+Explain how to use Plaid to populate the data fields in this project. Output an overview of every single dimension of my request. Find points of uncertainty. Then, ask me as many clarifying questions as necessary.
+
+========= Amazon Q Response ==========
+
+## Overview of Plaid Data Population
+
+### Current Account Model Fields
+**Directly from Plaid:**
+- `accountName` - Plaid returns `account.name` (e.g., "Plaid Credit Card")
+- `accountNumber` - Plaid returns `account.mask` (last 4 digits)
+- `creditLimit` - From `liabilitiesGet()` → `credit.aprs[].balance_subject_to_apr` or `credit.credit_limit`
+- `amountOwed` - From `accountsGet()` → `balances.current` (current balance)
+- `minimumMonthlyPayment` - From `liabilitiesGet()` → `credit.minimum_payment_amount`
+- `interestRate` - From `liabilitiesGet()` → `credit.aprs[].apr_percentage`
+
+**Not Available from Plaid:**
+- `rateExpiration` - Promotional rate end dates not provided
+- `rewards` - Points/cashback balances not in standard API
+- `lastUsed` - Would need to calculate from transaction dates
+- `statementCycleDay` - Not directly provided
+
+**Metadata:**
+- `plaidAccessToken` - From token exchange
+- `plaidItemId` - From token exchange
+- `plaidAccountId` - From `accountsGet()` → `account.account_id`
+
+### Data Flow Architecture
+
+**Initial Connection:**
+1. User connects via PlaidLink
+2. Exchange token → get `access_token`, `item_id`
+3. Call `accountsGet()` → filter credit cards → get `account_id`, basic info
+4. Call `liabilitiesGet()` → get detailed credit card data
+5. Populate Account model, save to MongoDB
+
+**Regular Updates:**
+1. Scheduled job (daily/weekly)
+2. For each account with `plaidAccessToken`:
+   - Fetch balances (`accountsGet`)
+   - Fetch liabilities (`liabilitiesGet`)
+   - Fetch transactions (`transactionsGet`)
+3. Update Account model fields
+
+### Points of Uncertainty
+
+**1. Multiple Credit Cards per Institution**
+- If user has 3 Chase cards, do you want 3 separate Account records?
+- Should user select which cards to track after connection?
+
+**2. Manual vs Auto-populated Fields**
+- Should users manually enter fields Plaid doesn't provide (rewards, rateExpiration)?
+- Or remove those fields entirely and only use Plaid data?
+
+**3. Data Refresh Strategy**
+- How often to sync: Daily? Weekly? On-demand button?
+- Update all fields or only balances/payments?
+
+**4. Initial vs Ongoing Data**
+- On first connection, auto-create Account records for all credit cards found?
+- Or let user review and select which to add?
+
+**5. Transaction Storage**
+- Do you want to store individual transactions in MongoDB?
+- Or just use them to calculate `lastUsed` and discard?
+
+**6. Account Matching**
+- If user manually created an account, then connects Plaid, how to match them?
+- Match by last 4 digits? Or always create new records?
+
+**7. Sandbox vs Production**
+- Sandbox returns fake data - are you testing first or going straight to Development mode?
+- Development mode requires real bank credentials
+
+**8. Error Handling**
+- If Plaid connection expires (user changes password), how to handle?
+- Show "Reconnect" button? Auto-disable syncing?
+
+## Clarifying Questions
+
+1. **Do you want to completely replace manual entry with Plaid**, or keep manual entry as a fallback option?
+
+2. **Should the form auto-populate when user connects Plaid**, or keep it as a separate "sync" feature?
+
+3. **For fields Plaid doesn't provide** (rewards, rateExpiration, statementCycleDay), should these remain manual-entry only?
+
+4. **How should the UI handle multiple credit cards** from one bank connection - show a selection modal?
+
+5. **Do you need transaction history**, or just current balances and payment info?
+
+6. **What's your priority**: Get basic balance syncing working first, or build the complete solution with all fields?
+
+============= answers =============
+
+Answers to clarifying questions:
+
+1) keep manual entry as fallback
+2) form should auto-populate
+3) non-provided fields should remain manual-entry
+4) UI should automatically download data for multiple credit cards from one bank connection
+5) will need transaction history eventually, but it is not necessary for first iteration
+6) Priority is build complete solution with all fields
+
+Other issues: 
+a) sync on connection
+b) on first connection, auto create Account records for all credit cards found
+c) match on last four digits for previously created accounts
+d) go straight to development mode
+e) syncing can be auto-disabled if necessary, and 'Reconnect' option can be implemented presenting opportunity to provide new password
+
+========== response ==========
+
+Complete Plaid integration implemented:
+
+Created:
+
+/api/plaid/sync-accounts - Syncs credit card data from Plaid, matches by last 4 digits, auto-creates/updates MongoDB records
+
+Updated PlaidLink component - Exchanges tokens and triggers sync
+
+Updated AccountForm - Includes PlaidLink button, auto-populates form with first synced account
+
+Updated lib/plaid.js - Set to development mode
+
+Updated .env.local - Set to development environment
+
+Flow:
+
+User clicks "Connect Bank Account" in form
+
+Plaid Link opens, user authenticates with real bank
+
+System exchanges token, fetches all credit cards
+
+Matches existing accounts by last 4 digits or creates new ones
+
+First account auto-populates form fields
+
+User can manually edit non-Plaid fields (rewards, rateExpiration, paymentDueDate)
+
+All accounts saved to MongoDB with Plaid tokens for future syncing
+

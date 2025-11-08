@@ -24,17 +24,39 @@ export default function NewAccountPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8">
+    <div style={{ minHeight: "100vh", background: "#f8f9fa", padding: "2rem" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <header style={{ marginBottom: "2rem" }}>
           <a
             href="/accounts"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 text-sm transition-colors"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              color: "#6b7280",
+              textDecoration: "none",
+              fontSize: "0.875rem",
+              marginBottom: "1rem",
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1a1a")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#6b7280")}
           >
             ← Back to Accounts
           </a>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Add New Account</h1>
-          <p className="text-gray-600">Enter your credit account details</p>
+          <h1
+            style={{
+              fontSize: "1.875rem",
+              fontWeight: 700,
+              marginBottom: "0.5rem",
+              color: "#1a1a1a",
+            }}
+          >
+            Add New Account
+          </h1>
+          <p style={{ color: "#6b7280", fontSize: "0.938rem" }}>
+            Enter your credit account details
+          </p>
         </header>
 
         <AccountForm onSubmit={handleSubmit} onCancel={handleCancel} />

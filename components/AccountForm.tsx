@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Account } from "@/app/types";
+import PlaidLink from "./PlaidLink";
 
 interface AccountFormProps {
   account?: Account;
@@ -13,6 +14,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
   const [formData, setFormData] = useState({
     accountName: account?.accountName || "",
     accountNumber: account?.accountNumber || "",
+    paymentDueDate: account?.paymentDueDate?.toString() || "",
     creditLimit: account?.creditLimit?.toString() || "",
     amountOwed: account?.amountOwed?.toString() || "",
     minimumMonthlyPayment: account?.minimumMonthlyPayment?.toString() || "",
@@ -20,7 +22,6 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
     rateExpiration: account?.rateExpiration || "",
     rewards: account?.rewards?.toString() || "",
     lastUsed: account?.lastUsed?.toString() || "",
-    statementCycleDay: account?.statementCycleDay?.toString() || "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -78,10 +79,10 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
     }
 
     // Complex validation
-    if (formData.statementCycleDay) {
-      const day = parseInt(formData.statementCycleDay);
+    if (formData.paymentDueDate) {
+      const day = parseInt(formData.paymentDueDate);
       if (day < 1 || day > 31) {
-        newErrors.statementCycleDay = "Statement cycle day must be between 1 and 31";
+        newErrors.paymentDueDate = "Payment due date must be between 1 and 31";
       }
     }
 
@@ -101,6 +102,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
     const submitData: Partial<Account> = {
       accountName: formData.accountName,
       accountNumber: formData.accountNumber || undefined,
+      paymentDueDate: formData.paymentDueDate ? parseInt(formData.paymentDueDate) : undefined,
       creditLimit: parseFloat(formData.creditLimit),
       amountOwed: formData.amountOwed ? parseFloat(formData.amountOwed) : 0,
       minimumMonthlyPayment: formData.minimumMonthlyPayment
@@ -110,9 +112,6 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
       rateExpiration: formData.rateExpiration || undefined,
       rewards: formData.rewards ? parseFloat(formData.rewards) : undefined,
       lastUsed: formData.lastUsed ? parseInt(formData.lastUsed) : undefined,
-      statementCycleDay: formData.statementCycleDay
-        ? parseInt(formData.statementCycleDay)
-        : undefined,
     };
 
     setIsSubmitting(true);
@@ -125,21 +124,106 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
     }
   };
 
+  const handlePlaidSuccess = (syncData: any) => {
+    if (syncData.accounts && syncData.accounts.length > 0) {
+      const firstAccount = syncData.accounts[0];
+      setFormData({
+        accountName: firstAccount.accountName || "",
+        accountNumber: firstAccount.accountNumber || "",
+        paymentDueDate: "",
+        creditLimit: firstAccount.creditLimit?.toString() || "",
+        amountOwed: firstAccount.amountOwed?.toString() || "",
+        minimumMonthlyPayment: firstAccount.minimumMonthlyPayment?.toString() || "",
+        interestRate: firstAccount.interestRate?.toString() || "",
+        rateExpiration: "",
+        rewards: "",
+        lastUsed: "",
+      });
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Account Information */}
-      <div className="bg-white shadow-md rounded-lg px-6 pt-6 pb-8 border border-gray-200">
-        <div className="mb-6 pb-3 border-b-2 border-gray-100">
-          <h2 className="text-lg font-semibold mb-1">Account Information</h2>
-          <p className="text-sm text-gray-600">
+    <>
+      <style jsx>{`
+        .form-grid {
+          display: grid;
+          gap: 1.25rem;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+          .form-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+      <form onSubmit={handleSubmit}>
+        {/* Plaid Connection */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: "8px",
+            padding: "1.5rem",
+            marginBottom: "1.5rem",
+            border: "1px solid #e5e7eb",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+          }}
+        >
+          <div
+            style={{
+              marginBottom: "1.25rem",
+              paddingBottom: "0.75rem",
+              borderBottom: "2px solid #f3f4f6",
+            }}
+          >
+            <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+              Connect Bank Account
+            </h2>
+            <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+              Link your credit card for automatic data sync
+            </p>
+          </div>
+          <PlaidLink onSuccess={handlePlaidSuccess} />
+        </div>
+
+        {/* Account Information */}
+      <div
+        style={{
+          background: "white",
+          borderRadius: "8px",
+          padding: "1.5rem",
+          marginBottom: "1.5rem",
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+        }}
+      >
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #f3f4f6",
+          }}
+        >
+          <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+            Account Information
+          </h2>
+          <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
             Basic identification details for this account
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="md:col-span-2">
-            <label htmlFor="accountName" className="block text-sm font-medium text-gray-700 mb-2">
-              Account Name <span className="text-red-600">*</span>
+        <div className="form-grid">
+          <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="accountName"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
+              Account Name <span style={{ color: "#dc2626", marginLeft: "0.25rem" }}>*</span>
             </label>
             <input
               type="text"
@@ -148,21 +232,55 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               value={formData.accountName}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`block w-full px-3.5 py-2.5 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all ${
-                errors.accountName
-                  ? "border-red-500"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: errors.accountName ? "1px solid #dc2626" : "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                if (!errors.accountName) {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target && !errors.accountName) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target && !errors.accountName) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="e.g., Chase Sapphire Reserve"
               required
             />
             {errors.accountName && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.accountName}</p>
+              <span style={{ fontSize: "0.813rem", color: "#dc2626", marginTop: "0.375rem" }}>
+                {errors.accountName}
+              </span>
             )}
           </div>
 
-          <div className="md:col-span-2">
-            <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700 mb-2">
+          <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="accountNumber"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
               Account Number
             </label>
             <input
@@ -171,27 +289,144 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               name="accountNumber"
               value={formData.accountNumber}
               onChange={handleChange}
-              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="Last 4 digits (optional)"
             />
-            <p className="mt-1.5 text-xs text-gray-500">For your reference only</p>
+            <span style={{ fontSize: "0.813rem", color: "#6b7280", marginTop: "0.375rem" }}>
+              For your reference only
+            </span>
+          </div>
+
+          <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="paymentDueDate"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
+              Payment Due Date (Day of Month)
+            </label>
+            <input
+              type="number"
+              id="paymentDueDate"
+              name="paymentDueDate"
+              value={formData.paymentDueDate}
+              onChange={handleChange}
+              min="1"
+              max="31"
+              step="1"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: errors.paymentDueDate ? "1px solid #dc2626" : "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                if (!errors.paymentDueDate) {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target && !errors.paymentDueDate) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target && !errors.paymentDueDate) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
+              placeholder="1-31"
+            />
+            {errors.paymentDueDate && (
+              <span style={{ fontSize: "0.813rem", color: "#dc2626", marginTop: "0.375rem" }}>
+                {errors.paymentDueDate}
+              </span>
+            )}
+            {!errors.paymentDueDate && (
+              <span style={{ fontSize: "0.813rem", color: "#6b7280", marginTop: "0.375rem" }}>
+                Day of month when payment is due (e.g., 15 for the 15th)
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Financial Details */}
-      <div className="bg-white shadow-md rounded-lg px-6 pt-6 pb-8 border border-gray-200">
-        <div className="mb-6 pb-3 border-b-2 border-gray-100">
-          <h2 className="text-lg font-semibold mb-1">Financial Details</h2>
-          <p className="text-sm text-gray-600">
+      <div
+        style={{
+          background: "white",
+          borderRadius: "8px",
+          padding: "1.5rem",
+          marginBottom: "1.5rem",
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+        }}
+      >
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #f3f4f6",
+          }}
+        >
+          <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+            Financial Details
+          </h2>
+          <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
             Credit limits, balances, and payment information
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label htmlFor="creditLimit" className="block text-sm font-medium text-gray-700 mb-2">
-              Credit Limit <span className="text-red-600">*</span>
+        <div className="form-grid">
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="creditLimit"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
+              Credit Limit <span style={{ color: "#dc2626", marginLeft: "0.25rem" }}>*</span>
             </label>
             <input
               type="number"
@@ -202,21 +437,55 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               onBlur={handleBlur}
               step="0.01"
               min="0"
-              className={`block w-full px-3.5 py-2.5 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all ${
-                errors.creditLimit
-                  ? "border-red-500"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: errors.creditLimit ? "1px solid #dc2626" : "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                if (!errors.creditLimit) {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target && !errors.creditLimit) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target && !errors.creditLimit) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="0.00"
               required
             />
             {errors.creditLimit && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.creditLimit}</p>
+              <span style={{ fontSize: "0.813rem", color: "#dc2626", marginTop: "0.375rem" }}>
+                {errors.creditLimit}
+              </span>
             )}
           </div>
 
-          <div>
-            <label htmlFor="amountOwed" className="block text-sm font-medium text-gray-700 mb-2">
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="amountOwed"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
               Amount Owed
             </label>
             <input
@@ -227,15 +496,46 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               onChange={handleChange}
               step="0.01"
               min="0"
-              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="0.00"
             />
           </div>
 
-          <div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <label
               htmlFor="minimumMonthlyPayment"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
             >
               Minimum Monthly Payment
             </label>
@@ -247,13 +547,47 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               onChange={handleChange}
               step="0.01"
               min="0"
-              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="0.00"
             />
           </div>
 
-          <div>
-            <label htmlFor="interestRate" className="block text-sm font-medium text-gray-700 mb-2">
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="interestRate"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
               Interest Rate (%)
             </label>
             <input
@@ -265,13 +599,47 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               step="0.01"
               min="0"
               max="100"
-              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="0.00"
             />
           </div>
 
-          <div className="md:col-span-2">
-            <label htmlFor="rateExpiration" className="block text-sm font-medium text-gray-700 mb-2">
+          <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="rateExpiration"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
               Rate Expiration Date
             </label>
             <input
@@ -280,28 +648,92 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               name="rateExpiration"
               value={formData.rateExpiration}
               onChange={handleChange}
-              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
             />
-            <p className="mt-1.5 text-xs text-gray-500">When does this interest rate expire?</p>
+            <span style={{ fontSize: "0.813rem", color: "#6b7280", marginTop: "0.375rem" }}>
+              When does this interest rate expire?
+            </span>
           </div>
         </div>
       </div>
 
       {/* Optional Information */}
-      <div className="bg-white shadow-md rounded-lg px-6 pt-6 pb-8 border border-gray-200">
-        <div className="mb-6 pb-3 border-b-2 border-gray-100">
-          <h2 className="text-lg font-semibold mb-1">
+      <div
+        style={{
+          background: "white",
+          borderRadius: "8px",
+          padding: "1.5rem",
+          marginBottom: "1.5rem",
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+        }}
+      >
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            paddingBottom: "0.75rem",
+            borderBottom: "2px solid #f3f4f6",
+          }}
+        >
+          <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.25rem" }}>
             Additional Information
-            <span className="ml-2 inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded font-medium">
+            <span
+              style={{
+                display: "inline-block",
+                padding: "0.125rem 0.5rem",
+                background: "#f3f4f6",
+                color: "#6b7280",
+                fontSize: "0.75rem",
+                borderRadius: "4px",
+                marginLeft: "0.5rem",
+                fontWeight: 500,
+              }}
+            >
               OPTIONAL
             </span>
           </h2>
-          <p className="text-sm text-gray-600">Track rewards, usage patterns, and billing cycle</p>
+          <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+            Track rewards and usage patterns
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label htmlFor="rewards" className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="form-grid">
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="rewards"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
               Rewards Balance
             </label>
             <input
@@ -312,14 +744,50 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               onChange={handleChange}
               step="0.01"
               min="0"
-              className="block w-full px-3.5 py-2.5 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all"
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="0.00"
             />
-            <p className="mt-1.5 text-xs text-gray-500">Cash back or points value</p>
+            <span style={{ fontSize: "0.813rem", color: "#6b7280", marginTop: "0.375rem" }}>
+              Cash back or points value
+            </span>
           </div>
 
-          <div>
-            <label htmlFor="lastUsed" className="block text-sm font-medium text-gray-700 mb-2">
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label
+              htmlFor="lastUsed"
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+                color: "#374151",
+              }}
+            >
               Last Used (Month 1-12)
             </label>
             <input
@@ -331,65 +799,120 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               min="1"
               max="12"
               step="1"
-              className={`block w-full px-3.5 py-2.5 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all ${
-                errors.lastUsed ? "border-red-500" : "border-gray-300 hover:border-gray-400"
-              }`}
+              style={{
+                padding: "0.625rem 0.875rem",
+                border: errors.lastUsed ? "1px solid #dc2626" : "1px solid #d1d5db",
+                borderRadius: "6px",
+                fontSize: "0.938rem",
+                transition: "all 0.2s",
+                background: "white",
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = "none";
+                e.target.style.borderColor = "#3b82f6";
+                e.target.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.1)";
+              }}
+              onBlurCapture={(e) => {
+                if (!errors.lastUsed) {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (document.activeElement !== e.target && !errors.lastUsed) {
+                  e.target.style.borderColor = "#9ca3af";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (document.activeElement !== e.target && !errors.lastUsed) {
+                  e.target.style.borderColor = "#d1d5db";
+                }
+              }}
               placeholder="1-12"
             />
             {errors.lastUsed && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.lastUsed}</p>
+              <span style={{ fontSize: "0.813rem", color: "#dc2626", marginTop: "0.375rem" }}>
+                {errors.lastUsed}
+              </span>
             )}
-            <p className="mt-1.5 text-xs text-gray-500">Track account activity</p>
-          </div>
-
-          <div>
-            <label htmlFor="statementCycleDay" className="block text-sm font-medium text-gray-700 mb-2">
-              Statement Cycle Day (1-31)
-            </label>
-            <input
-              type="number"
-              id="statementCycleDay"
-              name="statementCycleDay"
-              value={formData.statementCycleDay}
-              onChange={handleChange}
-              min="1"
-              max="31"
-              step="1"
-              className={`block w-full px-3.5 py-2.5 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all ${
-                errors.statementCycleDay
-                  ? "border-red-500"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
-              placeholder="15"
-            />
-            {errors.statementCycleDay && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.statementCycleDay}</p>
+            {!errors.lastUsed && (
+              <span style={{ fontSize: "0.813rem", color: "#6b7280", marginTop: "0.375rem" }}>
+                Track account activity
+              </span>
             )}
-            <p className="mt-1.5 text-xs text-gray-500">
-              Day of month for payment due date calculation
-            </p>
           </div>
         </div>
       </div>
 
       {/* Form Actions */}
-      <div className="bg-white shadow-md rounded-lg px-6 py-4 border border-gray-200 flex justify-end gap-4">
+      <div
+        style={{
+          background: "white",
+          borderRadius: "8px",
+          padding: "1.5rem",
+          border: "1px solid #e5e7eb",
+          display: "flex",
+          gap: "1rem",
+          justifyContent: "flex-end",
+        }}
+      >
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2.5 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-400 transition-all"
           disabled={isSubmitting}
+          style={{
+            padding: "0.75rem 1.5rem",
+            borderRadius: "6px",
+            fontSize: "0.938rem",
+            fontWeight: 500,
+            cursor: isSubmitting ? "not-allowed" : "pointer",
+            transition: "all 0.2s",
+            border: "1px solid #d1d5db",
+            background: "white",
+            color: "#6b7280",
+          }}
+          onMouseEnter={(e) => {
+            if (!isSubmitting) {
+              e.currentTarget.style.background = "#f9fafb";
+              e.currentTarget.style.borderColor = "#9ca3af";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "white";
+            e.currentTarget.style.borderColor = "#d1d5db";
+          }}
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-2.5 bg-black text-white font-medium rounded-md hover:bg-gray-900 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+          style={{
+            padding: "0.75rem 1.5rem",
+            borderRadius: "6px",
+            fontSize: "0.938rem",
+            fontWeight: 500,
+            cursor: isSubmitting ? "not-allowed" : "pointer",
+            transition: "all 0.2s",
+            border: "none",
+            background: isSubmitting ? "#9ca3af" : "#1a1a1a",
+            color: "white",
+          }}
+          onMouseEnter={(e) => {
+            if (!isSubmitting) {
+              e.currentTarget.style.background = "#000000";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isSubmitting) {
+              e.currentTarget.style.background = "#1a1a1a";
+            }
+          }}
         >
           {isSubmitting ? "Saving..." : account ? "Update Account" : "Save Account"}
         </button>
       </div>
-    </form>
+      </form>
+    </>
   );
 }

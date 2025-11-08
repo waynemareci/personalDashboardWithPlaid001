@@ -8,6 +8,7 @@ export interface Account {
   minimumMonthlyPayment?: number;
   interestRate?: number;
   rateExpiration?: string;
+  paymentDueDate?: number;
   rewards?: number;
   lastUsed?: number;
   statementCycleDay?: number;
@@ -15,6 +16,9 @@ export interface Account {
   userId?: string;
   createdAt?: string;
   updatedAt?: string;
+  plaidAccessToken?: string;
+  plaidAccountId?: string;
+  plaidItemId?: string;
 }
 
 export interface SummaryTotals {

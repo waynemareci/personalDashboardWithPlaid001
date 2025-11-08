@@ -222,6 +222,29 @@ export default function AccountsPage() {
           </h1>
           <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
             <button
+              onClick={handleAddNew}
+              className="print:hidden"
+              style={{
+                padding: "0.5rem 1rem",
+                border: "1px solid #1a1a1a",
+                background: "#1a1a1a",
+                color: "white",
+                borderRadius: "6px",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#333333";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#1a1a1a";
+              }}
+            >
+              + Create New Account
+            </button>
+            <button
               onClick={handlePrint}
               className="print:hidden"
               style={{
@@ -346,42 +369,11 @@ export default function AccountsPage() {
                 onSort={handleSort}
                 sortColumn={sortColumn}
                 sortDirection={sortDirection}
+                onAccountLinked={loadAccountsData}
               />
             )}
           </div>
         </div>
-
-        {/* Floating Action Button */}
-        <button
-          onClick={handleAddNew}
-          className="print:hidden"
-          style={{
-            position: "fixed",
-            bottom: "2rem",
-            right: "2rem",
-            width: "56px",
-            height: "56px",
-            borderRadius: "50%",
-            background: "#1a1a1a",
-            color: "white",
-            border: "none",
-            fontSize: "1.5rem",
-            cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            transition: "all 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-            e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.2)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-          }}
-          title="Add New Account"
-        >
-          +
-        </button>
 
         {/* Success Notification */}
         {notification && (
