@@ -39,17 +39,19 @@ export default function PlaidLinkAccount({ accountId, onSuccess }) {
       });
       const { access_token, item_id } = await exchangeResponse.json();
       
-      const linkResponse = await fetch('/api/accounts/link', {
+      const syncResponse = await fetch('/api/plaid/sync-accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accountId, access_token, item_id }),
+        body: JSON.stringify({ access_token, item_id }),
       });
-      const linkData = await linkResponse.json();
+      const syncData = await syncResponse.json();
       
-      if (linkData.error) {
-        alert(linkData.error);
+      if (syncData.error) {
+        alert('Sync failed: ' + syncData.error);
+      } else if (syncData.accounts && syncData.accounts.length > 0) {
+        onSuccess();
       } else {
-        onSuccess(linkData.account);
+        alert('No credit cards found');
       }
     },
     onExit: (err, metadata) => {
