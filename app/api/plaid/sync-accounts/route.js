@@ -10,15 +10,6 @@ export async function POST(request) {
     console.log('All accounts:', accountsResponse.data.accounts);
     
     let liabilitiesResponse = null;
-    let creditDetailsResponse = null;
-    
-    try {
-      creditDetailsResponse = await plaidClient.creditBankIncomeGet({ access_token });
-      console.log('Credit details available');
-    } catch (error) {
-      console.log('Credit details not available:', error.message);
-    }
-    
     try {
       liabilitiesResponse = await plaidClient.liabilitiesGet({ access_token });
     } catch (error) {
