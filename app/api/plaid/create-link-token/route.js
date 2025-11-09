@@ -11,7 +11,8 @@ export async function POST() {
     const config = {
       user: { client_user_id: 'user-id' },
       client_name: 'Personal Dashboard',
-      products: ['auth'],
+      products: ['liabilities'],
+      required_if_supported_products: ['liabilities'],
       country_codes: ['US'],
       language: 'en',
     };
