@@ -41,12 +41,22 @@ export default function PlaidLink({ onSuccess }) {
       });
       const { access_token, item_id } = await exchangeResponse.json();
       
+      console.log('Calling sync-accounts with:', { access_token, item_id });
+      
       const syncResponse = await fetch('/api/plaid/sync-accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ access_token, item_id }),
       });
       const syncData = await syncResponse.json();
+      
+      console.log('Sync response:', syncData);
+      
+      if (syncData.error) {
+        console.error('Sync failed:', syncData.error);
+        alert('Failed to sync accounts: ' + syncData.error);
+        return;
+      }
       
       onSuccess(syncData);
     },
