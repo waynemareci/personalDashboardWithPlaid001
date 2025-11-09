@@ -67,6 +67,7 @@ export async function POST(request) {
             ...card,
             id: `account-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             position: (maxPosition?.position || 0) + 1,
+            userId: 'default-user',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
