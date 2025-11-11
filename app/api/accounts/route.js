@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     await connectToDatabase();
-    const accounts = await Account.find({ userId: 'current-user-id' }).sort({ position: 1 });
+    const accounts = await Account.find({}).sort({ position: 1 });
     return NextResponse.json(accounts);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -20,13 +20,13 @@ export async function POST(request) {
 
     // If position not provided, set to end of list
     if (data.position === undefined) {
-      const count = await Account.countDocuments({ userId: 'current-user-id' });
+      const count = await Account.countDocuments({});
       data.position = count;
     }
 
     const account = await Account.create({
       ...data,
-      userId: 'current-user-id'
+      userId: data.userId || 'current-user-id'
     });
     return NextResponse.json(account);
   } catch (error) {

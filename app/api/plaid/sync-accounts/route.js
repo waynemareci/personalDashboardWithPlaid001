@@ -12,6 +12,7 @@ export async function POST(request) {
     let liabilitiesResponse = null;
     try {
       liabilitiesResponse = await plaidClient.liabilitiesGet({ access_token });
+      console.log('Liabilities:', liabilitiesResponse.data.liabilities);
     } catch (error) {
       console.log('Liabilities not available:', error.message);
     }

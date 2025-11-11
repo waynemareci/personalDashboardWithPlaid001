@@ -336,7 +336,7 @@ export default function AccountTableDetailed({
                     <button
                       onClick={() => {
                         if (window.confirm(`Delete ${account.accountName}?`)) {
-                          onDelete(account.id);
+                          onDelete(account._id || account.id);
                         }
                       }}
                       style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.125rem" }}

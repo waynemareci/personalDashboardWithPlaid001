@@ -53,7 +53,7 @@ export default function MetricCards({ accounts }: MetricCardsProps) {
           <div
             style={{
               height: "100%",
-              background: "linear-gradient(90deg, #dc2626 0%, #059669 100%)",
+              background: "#dc2626",
               width: `${utilization}%`,
               transition: "width 0.3s",
             }}
