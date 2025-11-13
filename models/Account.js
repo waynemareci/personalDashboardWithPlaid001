@@ -17,7 +17,8 @@ const AccountSchema = new mongoose.Schema({
   userId: { type: String, required: true }, // For multi-user support
   plaidAccessToken: String, // Plaid access token for live data
   plaidAccountId: String, // Plaid account ID
-  plaidItemId: String // Plaid item ID
+  plaidItemId: String, // Plaid item ID
+  nextPaymentDueDate: String // Next payment due date from Plaid
 }, { timestamps: true });
 
 export default mongoose.models.Account || mongoose.model('Account', AccountSchema);

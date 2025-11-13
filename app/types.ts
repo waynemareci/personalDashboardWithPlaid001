@@ -19,6 +19,7 @@ export interface Account {
   plaidAccessToken?: string;
   plaidAccountId?: string;
   plaidItemId?: string;
+  nextPaymentDueDate?: string;
 }
 
 export interface SummaryTotals {

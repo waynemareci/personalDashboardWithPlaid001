@@ -38,6 +38,7 @@ export async function POST(request) {
         amountOwed: Math.abs(account.balances.current || 0),
         minimumMonthlyPayment: liability?.minimum_payment_amount || 0,
         interestRate: liability?.aprs?.[0]?.apr_percentage || undefined,
+        nextPaymentDueDate: liability?.next_payment_due_date || undefined,
       };
     });
 

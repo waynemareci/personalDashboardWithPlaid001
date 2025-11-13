@@ -76,10 +76,22 @@ export function formatPaymentDate(date: Date): string {
  */
 export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
   const payments: UpcomingPayment[] = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
 
   for (const account of accounts) {
-    const dueDate = calculateNextPaymentDate(account.statementCycleDay);
+    let dueDate: Date | null = null;
 
+    // Prioritize Plaid's next_payment_due_date
+    if (account.nextPaymentDueDate) {
+      dueDate = new Date(account.nextPaymentDueDate);
+    } else {
+      // Fallback to calculated date from statement cycle
+      dueDate = calculateNextPaymentDate(account.statementCycleDay);
+    }
+
+    // Only include if has minimum payment (removed date filter for demo)
     if (dueDate && account.minimumMonthlyPayment && account.minimumMonthlyPayment > 0) {
       payments.push({
         accountId: account.id,

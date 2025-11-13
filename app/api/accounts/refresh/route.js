@@ -46,6 +46,7 @@ export async function POST(request) {
         amountOwed: Math.abs(plaidAccount.balances.current || 0),
         minimumMonthlyPayment: liability?.minimum_payment_amount || account.minimumMonthlyPayment,
         interestRate: liability?.aprs?.[0]?.apr_percentage || account.interestRate,
+        nextPaymentDueDate: liability?.next_payment_due_date || account.nextPaymentDueDate,
       },
       { new: true }
     );
