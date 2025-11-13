@@ -29,23 +29,6 @@ function AccountsPageContent() {
     setLoading(true);
     const data = await loadAccounts();
     setAccounts(data);
-    
-    // Fetch liabilities for each linked account
-    for (const account of data) {
-      if (account.plaidAccessToken) {
-        try {
-          const response = await fetch('/api/plaid/get-liabilities', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ access_token: account.plaidAccessToken }),
-          });
-          await response.json();
-        } catch (error) {
-          console.error('Error fetching liabilities:', error);
-        }
-      }
-    }
-    
     setLoading(false);
   };
 
