@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Account from '@/models/Account';
 import { NextResponse } from 'next/server';
 
+const liabilitiesCache = new Map();
+
 export async function POST(request) {
   try {
     const { accountId } = await request.json();
@@ -26,16 +28,19 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Plaid account not found' }, { status: 404 });
     }
 
-    let liabilitiesResponse = null;
-    try {
-      liabilitiesResponse = await plaidClient.liabilitiesGet({ 
-        access_token: account.plaidAccessToken 
-      });
-    } catch (error) {
-      console.log('Liabilities not available:', error.message);
+    if (!liabilitiesCache.has(account.plaidAccessToken)) {
+      try {
+        const liabilitiesResponse = await plaidClient.liabilitiesGet({ 
+          access_token: account.plaidAccessToken 
+        });
+        liabilitiesCache.set(account.plaidAccessToken, liabilitiesResponse.data.liabilities?.credit || []);
+      } catch (error) {
+        console.log('Liabilities not available:', error.message);
+        liabilitiesCache.set(account.plaidAccessToken, []);
+      }
     }
 
-    const liability = liabilitiesResponse?.data?.liabilities?.credit?.find(
+    const liability = liabilitiesCache.get(account.plaidAccessToken)?.find(
       c => c.account_id === account.plaidAccountId
     );
 
