@@ -18,10 +18,17 @@ export async function POST(request) {
     }
     
     const accounts = accountsResponse.data.accounts.filter(
-      acc => acc.type === 'credit' && acc.subtype === 'credit card'
+      acc => acc.type === 'credit'
     );
     
     console.log('Filtered credit cards:', accounts.length);
+    accountsResponse.data.accounts.forEach(acc => {
+      console.log(`Account: ${acc.name}, type: ${acc.type}, subtype: ${acc.subtype}`);
+    });
+    
+    if (accounts.length === 0) {
+      console.warn('No credit cards found. Check account types above.');
+    }
 
     const creditCards = accounts.map(account => {
       const liability = liabilitiesResponse?.data?.liabilities?.credit?.find(
