@@ -28,7 +28,11 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ environment: process.env.PLAID_ENV, data: results }, { status: 200 });
+    return NextResponse.json({ 
+      timestamp: new Date().toISOString(), 
+      environment: process.env.PLAID_ENV, 
+      data: results 
+    }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
