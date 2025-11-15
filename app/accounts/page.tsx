@@ -30,16 +30,10 @@ function AccountsPageContent() {
     const data = await loadAccounts();
     setAccounts(data);
     
-    // Silently refresh Plaid data in background (only for valid tokens)
-    data
-      .filter(acc => acc.plaidAccessToken)
-      .forEach(acc => {
-        fetch('/api/accounts/refresh', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accountId: acc._id || acc.id }),
-        }).catch(() => {}); // Silently ignore errors
-      });
+    // Silently refresh all Plaid data in background (one call per unique token)
+    fetch('/api/accounts/refresh-all', {
+      method: 'POST',
+    }).catch(() => {}); // Silently ignore errors
     
     setLoading(false);
   };
