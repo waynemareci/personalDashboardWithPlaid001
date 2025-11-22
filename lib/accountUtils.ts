@@ -91,8 +91,8 @@ export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
       dueDate = calculateNextPaymentDate(account.statementCycleDay);
     }
 
-    // Only include if has minimum payment (removed date filter for demo)
-    if (dueDate && account.minimumMonthlyPayment && account.minimumMonthlyPayment > 0) {
+    // Only include if has minimum payment and is within next 30 days
+    if (dueDate && dueDate >= today && dueDate <= thirtyDaysFromNow && account.minimumMonthlyPayment && account.minimumMonthlyPayment > 0) {
       payments.push({
         accountId: account.id,
         accountName: account.accountName,

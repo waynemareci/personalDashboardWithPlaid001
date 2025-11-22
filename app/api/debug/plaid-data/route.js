@@ -29,7 +29,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ 
-      timestamp: new Date().toISOString(), 
+      timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }), 
       environment: process.env.PLAID_ENV, 
       data: results 
     }, { status: 200 });
