@@ -280,6 +280,14 @@ export default function AccountTableCompact({
                             {account.rewards ? formatCurrency(account.rewards) : "—"}
                           </div>
                         </div>
+                        <div style={{ fontSize: "0.875rem" }}>
+                          <div style={{ color: "#6b7280", fontSize: "0.75rem", marginBottom: "0.25rem" }}>
+                            Payment Preference
+                          </div>
+                          <div style={{ fontWeight: 500 }}>
+                            {account.paymentPreference === "full" ? "Pay In Full" : "Make Minimum Payment"}
+                          </div>
+                        </div>
                       </div>
                       <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         {account.plaidAccessToken ? (

@@ -91,12 +91,17 @@ export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
       dueDate = calculateNextPaymentDate(account.statementCycleDay);
     }
 
-    // Only include if has minimum payment and is within next 30 days
-    if (dueDate && dueDate >= today && dueDate <= thirtyDaysFromNow && account.minimumMonthlyPayment && account.minimumMonthlyPayment > 0) {
+    // Calculate payment amount based on preference
+    const paymentAmount = account.paymentPreference === 'full' 
+      ? (account.amountOwed || 0)
+      : (account.minimumMonthlyPayment || 0);
+    
+    // Only include if has payment amount > 0 and is within next 30 days
+    if (dueDate && dueDate >= today && dueDate <= thirtyDaysFromNow && paymentAmount > 0) {
       payments.push({
         accountId: account.id,
         accountName: account.accountName,
-        amount: account.minimumMonthlyPayment,
+        amount: paymentAmount,
         dueDate,
         dayOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dueDate.getDay()],
         formattedDate: formatPaymentDate(dueDate),

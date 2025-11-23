@@ -13,6 +13,7 @@ const AccountSchema = new mongoose.Schema({
   rewards: { type: Number, default: 0 },
   lastUsed: Number,
   statementCycleDay: { type: Number, min: 1, max: 31 }, // Day of month for statement cycle
+  paymentPreference: { type: String, enum: ['full', 'minimum'], default: 'minimum' },
   position: { type: Number, required: true },
   userId: { type: String, required: true }, // For multi-user support
   plaidAccessToken: String, // Plaid access token for live data

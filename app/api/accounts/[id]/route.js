@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const data = await request.json();
     await connectToDatabase();
     
@@ -27,7 +27,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await connectToDatabase();
     
     const account = await Account.findByIdAndDelete(id);

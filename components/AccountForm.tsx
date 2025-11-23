@@ -19,6 +19,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
     amountOwed: account?.amountOwed?.toString() || "",
     minimumMonthlyPayment: account?.minimumMonthlyPayment?.toString() || "",
     interestRate: account?.interestRate?.toString() || "",
+    paymentPreference: account?.paymentPreference || "full",
     rateExpiration: account?.rateExpiration || "",
     rewards: account?.rewards?.toString() || "",
     lastUsed: account?.lastUsed?.toString() || "",
@@ -109,6 +110,7 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
         ? parseFloat(formData.minimumMonthlyPayment)
         : 0,
       interestRate: formData.interestRate ? parseFloat(formData.interestRate) : undefined,
+      paymentPreference: formData.paymentPreference as 'full' | 'minimum',
       rateExpiration: formData.rateExpiration || undefined,
       rewards: formData.rewards ? parseFloat(formData.rewards) : undefined,
       lastUsed: formData.lastUsed ? parseInt(formData.lastUsed) : undefined,
@@ -628,6 +630,76 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               }}
               placeholder="0.00"
             />
+          </div>
+
+          <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column" }}>
+            <label style={{ fontSize: "0.875rem", fontWeight: 500, marginBottom: "0.75rem", color: "#374151" }}>
+              Payment Preference
+            </label>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.75rem",
+                  cursor: "pointer",
+                  padding: "0.5rem",
+                  borderRadius: "6px",
+                  transition: "background-color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f9fafb")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+              >
+                <input
+                  type="radio"
+                  id="payInFull"
+                  name="paymentPreference"
+                  value="full"
+                  checked={formData.paymentPreference === "full"}
+                  onChange={handleChange}
+                  style={{ width: "18px", height: "18px", cursor: "pointer", margin: 0, marginTop: "2px", flexShrink: 0 }}
+                />
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="payInFull" style={{ margin: 0, cursor: "pointer", fontWeight: 500, display: "block", marginBottom: "0.125rem" }}>
+                    Pay In Full
+                  </label>
+                  <span style={{ fontSize: "0.813rem", color: "#6b7280", fontWeight: 400, marginTop: "0.125rem" }}>
+                    Pay the entire balance each month to avoid interest charges
+                  </span>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.75rem",
+                  cursor: "pointer",
+                  padding: "0.5rem",
+                  borderRadius: "6px",
+                  transition: "background-color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#f9fafb")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+              >
+                <input
+                  type="radio"
+                  id="makeMinimumPayment"
+                  name="paymentPreference"
+                  value="minimum"
+                  checked={formData.paymentPreference === "minimum"}
+                  onChange={handleChange}
+                  style={{ width: "18px", height: "18px", cursor: "pointer", margin: 0, marginTop: "2px", flexShrink: 0 }}
+                />
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="makeMinimumPayment" style={{ margin: 0, cursor: "pointer", fontWeight: 500, display: "block", marginBottom: "0.125rem" }}>
+                    Make Minimum Payment
+                  </label>
+                  <span style={{ fontSize: "0.813rem", color: "#6b7280", fontWeight: 400, marginTop: "0.125rem" }}>
+                    Pay only the minimum required amount each month
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column" }}>

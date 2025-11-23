@@ -75,7 +75,7 @@ export default function MetricCards({ accounts }: MetricCardsProps) {
 
         {/* Total */}
         <div className="flex justify-between items-center mt-4 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-          <span style={{ fontSize: "0.813rem", color: "#6b7280" }}>Minimum payment next 30 days</span>
+          <span style={{ fontSize: "0.813rem", color: "#6b7280" }}>Expected payment</span>
           <span style={{ fontSize: "1.25rem", fontWeight: 700, color: "#3b82f6" }}>
             {formatCurrency(totalMinimumPayment)}
           </span>

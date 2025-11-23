@@ -12,6 +12,7 @@ export interface Account {
   rewards?: number;
   lastUsed?: number;
   statementCycleDay?: number;
+  paymentPreference?: 'full' | 'minimum';
   position: number;
   userId?: string;
   createdAt?: string;
