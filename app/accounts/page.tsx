@@ -29,13 +29,15 @@ function AccountsPageContent() {
     setLoading(true);
     const data = await loadAccounts();
     setAccounts(data);
+    setLoading(false);
     
-    // Silently refresh all Plaid data in background (one call per unique token)
+    // Refresh Plaid data in background, then reload
     fetch('/api/accounts/refresh-all', {
       method: 'POST',
+    }).then(async () => {
+      const refreshedData = await loadAccounts();
+      setAccounts(refreshedData);
     }).catch(() => {}); // Silently ignore errors
-    
-    setLoading(false);
   };
 
   const handleViewToggle = (view: "compact" | "detailed") => {
