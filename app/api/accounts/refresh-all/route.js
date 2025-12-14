@@ -20,16 +20,6 @@ export async function POST() {
 
     for (const [token, accs] of tokenMap.entries()) {
       try {
-        // Request fresh data from bank
-        try {
-          console.log('Requesting refresh for token:', token.slice(-4));
-          await plaidClient.transactionsRefresh({ access_token: token });
-          console.log('Refresh requested, waiting...');
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        } catch (refreshError) {
-          console.error('Refresh failed for token:', token.slice(-4), refreshError.message);
-        }
-
         const [accountsRes, liabilitiesRes] = await Promise.all([
           plaidClient.accountsGet({ access_token: token }),
           plaidClient.liabilitiesGet({ access_token: token }).catch(() => null)
@@ -45,7 +35,7 @@ export async function POST() {
 
           await Account.findByIdAndUpdate(acc._id, {
             creditLimit: liability?.credit_limit || plaidAccount.balances.limit || acc.creditLimit,
-            amountOwed: Math.abs(plaidAccount.balances.current || 0),
+            amountOwed: plaidAccount.balances.current || 0,
             minimumMonthlyPayment: liability?.minimum_payment_amount || acc.minimumMonthlyPayment,
             interestRate: liability?.aprs?.[0]?.apr_percentage || acc.interestRate,
             nextPaymentDueDate: liability?.next_payment_due_date || acc.nextPaymentDueDate,

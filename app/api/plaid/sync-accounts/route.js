@@ -6,17 +6,6 @@ export async function POST(request) {
     const { access_token, item_id } = await request.json();
     console.log('Syncing accounts with access_token:', access_token);
     
-    // Force refresh from bank before fetching data
-    try {
-      console.log('Requesting transactionsRefresh...');
-      const refreshResponse = await plaidClient.transactionsRefresh({ access_token });
-      console.log('Refresh requested successfully:', refreshResponse.data);
-      await new Promise(resolve => setTimeout(resolve, 3000));
-    } catch (error) {
-      console.error('Refresh failed:', error.message);
-      console.error('Error details:', error.response?.data || error);
-    }
-    
     const accountsResponse = await plaidClient.accountsGet({ access_token });
     console.log('All accounts:', accountsResponse.data.accounts);
     
@@ -53,7 +42,7 @@ export async function POST(request) {
         accountName: account.official_name || account.name,
         accountNumber: account.mask,
         creditLimit: liability?.credit_limit || account.balances.limit || 0,
-        amountOwed: Math.abs(account.balances.current || 0),
+        amountOwed: account.balances.current || 0,
         minimumMonthlyPayment: liability?.minimum_payment_amount || 0,
         interestRate: liability?.aprs?.[0]?.apr_percentage || undefined,
         nextPaymentDueDate: liability?.next_payment_due_date || undefined,

@@ -39,10 +39,17 @@ export async function GET(request) {
         amountOwed: account.amountOwed,
         creditLimit: account.creditLimit,
         minimumMonthlyPayment: account.minimumMonthlyPayment,
+        lastUpdated: account.updatedAt,
       },
       plaidRawData: {
         account: plaidAccount,
         liability: liability,
+      },
+      dataFreshness: {
+        lastStatementIssueDate: liability?.last_statement_issue_date,
+        lastPaymentDate: liability?.last_payment_date,
+        balancesLastUpdated: plaidAccount?.balances?.unofficial_currency_code ? 'Real-time' : 'Cached',
+        itemLastUpdated: response.data.item?.update_type,
       },
       interpretation: {
         currentBalance: plaidAccount?.balances?.current,
@@ -51,6 +58,8 @@ export async function GET(request) {
         isoCurrencyCode: plaidAccount?.balances?.iso_currency_code,
         lastPaymentAmount: liability?.last_payment_amount,
         lastStatementBalance: liability?.last_statement_balance,
+        lastStatementIssueDate: liability?.last_statement_issue_date,
+        lastPaymentDate: liability?.last_payment_date,
         minimumPaymentAmount: liability?.minimum_payment_amount,
         nextPaymentDueDate: liability?.next_payment_due_date,
       }
