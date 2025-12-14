@@ -8,11 +8,13 @@ export async function POST(request) {
     
     // Force refresh from bank before fetching data
     try {
-      await plaidClient.transactionsRefresh({ access_token });
-      console.log('Refresh requested, waiting for update...');
+      console.log('Requesting transactionsRefresh...');
+      const refreshResponse = await plaidClient.transactionsRefresh({ access_token });
+      console.log('Refresh requested successfully:', refreshResponse.data);
       await new Promise(resolve => setTimeout(resolve, 3000));
     } catch (error) {
-      console.log('Refresh failed, continuing with cached data:', error.message);
+      console.error('Refresh failed:', error.message);
+      console.error('Error details:', error.response?.data || error);
     }
     
     const accountsResponse = await plaidClient.accountsGet({ access_token });
