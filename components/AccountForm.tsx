@@ -99,11 +99,27 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
       return;
     }
 
+    // Calculate nextPaymentDueDate from paymentDueDate
+    let nextPaymentDueDate: string | undefined;
+    if (formData.paymentDueDate) {
+      const day = parseInt(formData.paymentDueDate);
+      const today = new Date();
+      const currentMonth = new Date(today.getFullYear(), today.getMonth(), day);
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, day);
+      
+      if (currentMonth >= today) {
+        nextPaymentDueDate = currentMonth.toISOString().split('T')[0];
+      } else {
+        nextPaymentDueDate = nextMonth.toISOString().split('T')[0];
+      }
+    }
+
     // Prepare data for submission
     const submitData: Partial<Account> = {
       accountName: formData.accountName,
       accountNumber: formData.accountNumber || undefined,
       paymentDueDate: formData.paymentDueDate ? parseInt(formData.paymentDueDate) : undefined,
+      nextPaymentDueDate,
       creditLimit: parseFloat(formData.creditLimit),
       amountOwed: formData.amountOwed ? parseFloat(formData.amountOwed) : 0,
       minimumMonthlyPayment: formData.minimumMonthlyPayment
@@ -497,7 +513,6 @@ export default function AccountForm({ account, onSubmit, onCancel }: AccountForm
               value={formData.amountOwed}
               onChange={handleChange}
               step="0.01"
-              min="0"
               style={{
                 padding: "0.625rem 0.875rem",
                 border: "1px solid #d1d5db",

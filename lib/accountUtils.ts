@@ -92,14 +92,21 @@ export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
     }
 
     // Calculate payment amount based on preference
-    const paymentAmount = account.paymentPreference === 'full' 
+    let paymentAmount = account.paymentPreference === 'full' 
       ? (account.amountOwed || 0)
       : (account.minimumMonthlyPayment || 0);
+    
+    // Fallback to amountOwed if minimumMonthlyPayment is 0
+    if (paymentAmount === 0 && account.amountOwed) {
+      paymentAmount = account.amountOwed;
+    }
+    
+    console.log(`${account.accountName}: dueDate=${dueDate?.toISOString()}, amount=${paymentAmount}, within30days=${dueDate && dueDate <= thirtyDaysFromNow}`);
     
     // Only include if has payment amount > 0 and is within next 30 days
     if (dueDate && dueDate >= today && dueDate <= thirtyDaysFromNow && paymentAmount > 0) {
       payments.push({
-        accountId: account.id,
+        accountId: account._id || account.id,
         accountName: account.accountName,
         amount: paymentAmount,
         dueDate,
