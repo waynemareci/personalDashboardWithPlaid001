@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Account } from "@/app/types";
 import { loadAccounts, updateAccount } from "@/lib/dataSync";
 import AccountForm from "@/components/AccountForm";
+import PlaidLinkAccount from "@/components/PlaidLinkAccount";
 
 export default function EditAccountPage() {
   const router = useRouter();
@@ -93,6 +94,21 @@ export default function EditAccountPage() {
           <p style={{ color: "#6b7280", fontSize: "0.938rem" }}>
             Update {account.accountName} details
           </p>
+          {account.plaidAccessToken && (
+            <div style={{ marginTop: "1rem", padding: "1rem", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "6px" }}>
+              <div style={{ fontSize: "0.875rem", color: "#166534", marginBottom: "0.5rem", fontWeight: 500 }}>
+                This account is linked to Plaid
+              </div>
+              <div style={{ fontSize: "0.813rem", color: "#15803d", marginBottom: "0.75rem" }}>
+                Re-link to update with latest Plaid products and refresh connection
+              </div>
+              <PlaidLinkAccount 
+                accountId={account._id || account.id} 
+                onSuccess={loadAccountData}
+                buttonLabel="Re-link Account"
+              />
+            </div>
+          )}
         </header>
 
         <AccountForm account={account} onSubmit={handleSubmit} onCancel={handleCancel} />

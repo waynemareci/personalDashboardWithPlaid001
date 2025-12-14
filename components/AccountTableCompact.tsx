@@ -291,22 +291,16 @@ export default function AccountTableCompact({
                       </div>
                       <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         {account.plaidAccessToken ? (
-                          <>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                              <span style={{ fontSize: "0.813rem", color: "#059669", fontWeight: 500 }}>
-                                ✓ Linked to Plaid
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            <span style={{ fontSize: "0.813rem", color: "#059669", fontWeight: 500 }}>
+                              ✓ Linked to Plaid
+                            </span>
+                            {account.updatedAt && (
+                              <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                                Last synced: {new Date(account.updatedAt).toLocaleString()}
                               </span>
-                              {account.updatedAt && (
-                                <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                                  Last synced: {new Date(account.updatedAt).toLocaleString()}
-                                </span>
-                              )}
-                            </div>
-                            <PlaidLinkAccount 
-                              accountId={account._id || account.id} 
-                              onSuccess={() => onAccountLinked?.()} 
-                            />
-                          </>
+                            )}
+                          </div>
                         ) : (
                           <PlaidLinkAccount 
                             accountId={account._id || account.id} 

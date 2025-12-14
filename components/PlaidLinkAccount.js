@@ -3,7 +3,7 @@
 import { usePlaidLink } from 'react-plaid-link';
 import { useState, useEffect } from 'react';
 
-export default function PlaidLinkAccount({ accountId, onSuccess }) {
+export default function PlaidLinkAccount({ accountId, onSuccess, buttonLabel = 'Link Account' }) {
   const [linkToken, setLinkToken] = useState(null);
   const [mounted, setMounted] = useState(false);
 
@@ -76,7 +76,7 @@ export default function PlaidLinkAccount({ accountId, onSuccess }) {
           cursor: 'not-allowed',
         }}
       >
-        Link Account
+        {buttonLabel}
       </button>
     );
   }
@@ -95,7 +95,7 @@ export default function PlaidLinkAccount({ accountId, onSuccess }) {
         cursor: ready ? 'pointer' : 'not-allowed',
       }}
     >
-      Link Account
+      {buttonLabel}
     </button>
   );
 }
