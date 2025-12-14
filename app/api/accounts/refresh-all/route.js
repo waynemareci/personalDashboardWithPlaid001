@@ -20,6 +20,14 @@ export async function POST() {
 
     for (const [token, accs] of tokenMap.entries()) {
       try {
+        // Request fresh data from bank
+        try {
+          await plaidClient.transactionsRefresh({ access_token: token });
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        } catch (refreshError) {
+          console.error('Refresh failed for token:', token.slice(-4), refreshError.response?.data?.error_code || refreshError.message);
+        }
+
         const [accountsRes, liabilitiesRes] = await Promise.all([
           plaidClient.accountsGet({ access_token: token }),
           plaidClient.liabilitiesGet({ access_token: token }).catch(() => null)

@@ -6,6 +6,14 @@ export async function POST(request) {
     const { access_token, item_id } = await request.json();
     console.log('Syncing accounts with access_token:', access_token);
     
+    // Request fresh data from bank
+    try {
+      await plaidClient.transactionsRefresh({ access_token });
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (refreshError) {
+      console.error('Refresh failed:', refreshError.response?.data?.error_code || refreshError.message);
+    }
+    
     const accountsResponse = await plaidClient.accountsGet({ access_token });
     console.log('All accounts:', accountsResponse.data.accounts);
     
