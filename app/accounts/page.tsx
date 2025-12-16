@@ -31,13 +31,23 @@ function AccountsPageContent() {
     setAccounts(data);
     setLoading(false);
     
-    // Refresh Plaid data in background, then reload
-    fetch('/api/accounts/refresh-all', {
-      method: 'POST',
-    }).then(async () => {
-      const refreshedData = await loadAccounts();
-      setAccounts(refreshedData);
-    }).catch(() => {}); // Silently ignore errors
+    // Only refresh if data is older than 24 hours
+    const oldestUpdate = data
+      .filter(acc => acc.plaidAccessToken && acc.updatedAt)
+      .reduce((oldest, acc) => {
+        const accTime = new Date(acc.updatedAt).getTime();
+        return accTime < oldest ? accTime : oldest;
+      }, Date.now());
+    
+    const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
+    
+    if (oldestUpdate < twentyFourHoursAgo) {
+      fetch('/api/accounts/refresh-all', { method: 'POST' })
+        .then(async () => {
+          const refreshedData = await loadAccounts();
+          setAccounts(refreshedData);
+        }).catch(() => {});
+    }
   };
 
   const handleViewToggle = (view: "compact" | "detailed") => {
