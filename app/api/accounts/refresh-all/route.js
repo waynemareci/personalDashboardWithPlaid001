@@ -44,9 +44,9 @@ export async function POST() {
           await Account.findByIdAndUpdate(acc._id, {
             creditLimit: liability?.credit_limit || plaidAccount.balances.limit || acc.creditLimit,
             amountOwed: plaidAccount.balances.current || 0,
-            minimumMonthlyPayment: liability?.minimum_payment_amount || acc.minimumMonthlyPayment,
-            interestRate: liability?.aprs?.[0]?.apr_percentage || acc.interestRate,
-            nextPaymentDueDate: liability?.next_payment_due_date || acc.nextPaymentDueDate,
+            minimumMonthlyPayment: liability?.minimum_payment_amount ?? 0,
+            interestRate: liability?.aprs?.[0]?.apr_percentage ?? acc.interestRate,
+            nextPaymentDueDate: liability?.next_payment_due_date ?? acc.nextPaymentDueDate,
           });
         }
       } catch (error) {

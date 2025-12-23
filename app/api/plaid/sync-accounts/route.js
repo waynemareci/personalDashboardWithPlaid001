@@ -51,9 +51,9 @@ export async function POST(request) {
         accountNumber: account.mask,
         creditLimit: liability?.credit_limit || account.balances.limit || 0,
         amountOwed: account.balances.current || 0,
-        minimumMonthlyPayment: liability?.minimum_payment_amount || 0,
-        interestRate: liability?.aprs?.[0]?.apr_percentage || undefined,
-        nextPaymentDueDate: liability?.next_payment_due_date || undefined,
+        minimumMonthlyPayment: liability?.minimum_payment_amount ?? 0,
+        interestRate: liability?.aprs?.[0]?.apr_percentage ?? undefined,
+        nextPaymentDueDate: liability?.next_payment_due_date ?? undefined,
       };
     });
 
