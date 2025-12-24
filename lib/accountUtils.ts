@@ -86,7 +86,10 @@ export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
     // Prioritize Plaid's next_payment_due_date
     if (account.nextPaymentDueDate) {
       dueDate = new Date(account.nextPaymentDueDate);
-    } else {
+    } else if (account.paymentDueDate) {
+      // Use paymentDueDate for non-Plaid accounts
+      dueDate = calculateNextPaymentDate(account.paymentDueDate);
+    } else if (account.statementCycleDay) {
       // Fallback to calculated date from statement cycle
       dueDate = calculateNextPaymentDate(account.statementCycleDay);
     }
