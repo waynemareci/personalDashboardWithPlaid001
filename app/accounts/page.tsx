@@ -16,8 +16,8 @@ function AccountsPageContent() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<string | null>(null);
-  const [sortColumn, setSortColumn] = useState<string>("position");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortColumn, setSortColumn] = useState<string>("creditLimit");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const isDetailedView = viewParam === "detailed";
 
