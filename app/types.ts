@@ -21,6 +21,7 @@ export interface Account {
   plaidAccountId?: string;
   plaidItemId?: string;
   nextPaymentDueDate?: string;
+  lastStatementBalance?: number;
 }
 
 export interface SummaryTotals {

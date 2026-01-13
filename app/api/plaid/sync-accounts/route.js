@@ -54,6 +54,7 @@ export async function POST(request) {
         minimumMonthlyPayment: liability?.minimum_payment_amount ?? 0,
         interestRate: liability?.aprs?.[0]?.apr_percentage ?? undefined,
         nextPaymentDueDate: liability?.next_payment_due_date ?? undefined,
+        lastStatementBalance: liability?.last_statement_balance ?? undefined,
       };
     });
 

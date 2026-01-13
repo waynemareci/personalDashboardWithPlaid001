@@ -19,7 +19,8 @@ const AccountSchema = new mongoose.Schema({
   plaidAccessToken: String, // Plaid access token for live data
   plaidAccountId: String, // Plaid account ID
   plaidItemId: String, // Plaid item ID
-  nextPaymentDueDate: String // Next payment due date from Plaid
+  nextPaymentDueDate: String, // Next payment due date from Plaid
+  lastStatementBalance: Number // Last statement balance from Plaid
 }, { timestamps: true });
 
 export default mongoose.models.Account || mongoose.model('Account', AccountSchema);
