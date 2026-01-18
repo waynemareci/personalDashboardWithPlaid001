@@ -97,8 +97,12 @@ export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
     // Calculate payment amount based on preference
     let paymentAmount = 0;
     
+    // For Plaid accounts, if minimumMonthlyPayment is 0, use 0 regardless of preference
+    if (account.plaidAccessToken && account.minimumMonthlyPayment === 0) {
+      paymentAmount = 0;
+    }
     // For Plaid accounts with 'full' preference, use lastStatementBalance if it exists (even if 0)
-    if (account.plaidAccessToken && account.paymentPreference === 'full') {
+    else if (account.plaidAccessToken && account.paymentPreference === 'full') {
       paymentAmount = account.lastStatementBalance !== undefined && account.lastStatementBalance !== null
         ? account.lastStatementBalance
         : (account.amountOwed || 0);
@@ -106,10 +110,6 @@ export function getUpcomingPayments(accounts: Account[]): UpcomingPayment[] {
     // For non-Plaid accounts with 'full' preference, always use amountOwed
     else if (!account.plaidAccessToken && account.paymentPreference === 'full') {
       paymentAmount = account.amountOwed || 0;
-    }
-    // For Plaid accounts, if minimumMonthlyPayment is 0, use 0 regardless of preference
-    else if (account.plaidAccessToken && account.minimumMonthlyPayment === 0) {
-      paymentAmount = 0;
     }
     // Otherwise, use preference logic
     else if (account.paymentPreference === 'full') {
